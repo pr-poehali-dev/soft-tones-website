@@ -2,10 +2,17 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
 import Icon from '@/components/ui/icon';
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('home');
+  const [formData, setFormData] = useState({ name: '', email: '', phone: '', message: '' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
 
   const portfolioImages = [
     'https://cdn.poehali.dev/projects/cdb1695f-7416-4202-b21d-880bd0185eac/files/28374455-f6cf-47e5-b57a-9d3abf33c16b.jpg',
@@ -33,6 +40,24 @@ const Index = () => {
     setActiveSection(sectionId);
     const element = document.getElementById(sectionId);
     element?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    setTimeout(() => {
+      setIsSubmitting(false);
+      toast({
+        title: "Заявка отправлена!",
+        description: "Мы свяжемся с вами в ближайшее время.",
+      });
+      setFormData({ name: '', email: '', phone: '', message: '' });
+    }, 1500);
   };
 
   return (
@@ -179,31 +204,141 @@ const Index = () => {
         </section>
 
         <section id="contacts" className="py-20 px-6 bg-primary/10">
-          <div className="container mx-auto max-w-2xl text-center">
-            <h2 className="text-5xl font-cormorant font-semibold mb-6 text-foreground">Контакты</h2>
-            <p className="text-lg text-foreground/80 mb-8">
+          <div className="container mx-auto max-w-5xl">
+            <h2 className="text-5xl font-cormorant font-semibold text-center mb-4 text-foreground">Контакты</h2>
+            <p className="text-center text-foreground/80 mb-12 text-lg">
               Готовы обсудить ваш проект? Свяжитесь с нами удобным способом
             </p>
-            <div className="flex flex-col md:flex-row gap-4 justify-center items-center mb-8">
-              <Button size="lg" className="bg-secondary hover:bg-secondary/90 text-secondary-foreground rounded-full">
-                <Icon name="Mail" className="mr-2" />
-                info@studio.ru
-              </Button>
-              <Button size="lg" variant="outline" className="rounded-full border-border">
-                <Icon name="Phone" className="mr-2" />
-                +7 (999) 123-45-67
-              </Button>
-            </div>
-            <div className="flex gap-6 justify-center">
-              <Button size="icon" variant="ghost" className="rounded-full hover:bg-primary/20">
-                <Icon name="Instagram" />
-              </Button>
-              <Button size="icon" variant="ghost" className="rounded-full hover:bg-primary/20">
-                <Icon name="Facebook" />
-              </Button>
-              <Button size="icon" variant="ghost" className="rounded-full hover:bg-primary/20">
-                <Icon name="Send" />
-              </Button>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+              <div className="space-y-8">
+                <div>
+                  <h3 className="text-2xl font-cormorant font-semibold mb-6 text-foreground">Наши контакты</h3>
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                        <Icon name="Mail" className="text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground">Email</p>
+                        <p className="text-foreground font-medium">info@studio.ru</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                        <Icon name="Phone" className="text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground">Телефон</p>
+                        <p className="text-foreground font-medium">+7 (999) 123-45-67</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                        <Icon name="MapPin" className="text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground">Адрес</p>
+                        <p className="text-foreground font-medium">Москва, ул. Примерная, 123</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-8">
+                    <p className="text-sm text-muted-foreground mb-4">Мы в соцсетях</p>
+                    <div className="flex gap-4">
+                      <Button size="icon" variant="ghost" className="rounded-full hover:bg-primary/20">
+                        <Icon name="Instagram" />
+                      </Button>
+                      <Button size="icon" variant="ghost" className="rounded-full hover:bg-primary/20">
+                        <Icon name="Facebook" />
+                      </Button>
+                      <Button size="icon" variant="ghost" className="rounded-full hover:bg-primary/20">
+                        <Icon name="Send" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <Card className="p-8 border-border/50 animate-fade-in">
+                <h3 className="text-2xl font-cormorant font-semibold mb-6 text-foreground">Оставить заявку</h3>
+                <form onSubmit={handleSubmit} className="space-y-5">
+                  <div className="space-y-2">
+                    <Label htmlFor="name" className="text-foreground">Ваше имя</Label>
+                    <Input
+                      id="name"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      placeholder="Иван Иванов"
+                      required
+                      className="border-border/50"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="email" className="text-foreground">Email</Label>
+                    <Input
+                      id="email"
+                      name="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      placeholder="ivan@example.com"
+                      required
+                      className="border-border/50"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="phone" className="text-foreground">Телефон</Label>
+                    <Input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      placeholder="+7 (999) 123-45-67"
+                      required
+                      className="border-border/50"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="message" className="text-foreground">Сообщение</Label>
+                    <Textarea
+                      id="message"
+                      name="message"
+                      value={formData.message}
+                      onChange={handleInputChange}
+                      placeholder="Расскажите о вашем проекте..."
+                      rows={4}
+                      required
+                      className="border-border/50 resize-none"
+                    />
+                  </div>
+                  
+                  <Button
+                    type="submit"
+                    size="lg"
+                    disabled={isSubmitting}
+                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-full"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Icon name="Loader2" className="mr-2 animate-spin" />
+                        Отправка...
+                      </>
+                    ) : (
+                      <>
+                        <Icon name="Send" className="mr-2" />
+                        Отправить заявку
+                      </>
+                    )}
+                  </Button>
+                </form>
+              </Card>
             </div>
           </div>
         </section>
